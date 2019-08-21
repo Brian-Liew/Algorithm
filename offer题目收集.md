@@ -1,0 +1,243 @@
+### PYTHON：
+
+##### 进程与线程的区别：
+
+进程拥有一个完整的虚拟地址空间，不依赖线程而独立存在；反之，线程是进程的一部分，没有自己的地址空间，与进程内其他线程一起共享分配给该进程的所有资源。
+
+##### 为什么说python的线程是伪线程：
+
+在python的原始解释器CPython中存在着GIL（全局解释器锁），因此在解释执行代码时，会产生互斥锁来限制线程对共享资源的访问，知道解释器遇到I/O操作或者操作次数达到一定数目时才会释放GIL。所以虽然CPython的线程库直接封装了系统的原生线程，但CPython整体作为一个进程，同一时间只会有一个线程在跑，其他处于等待，造成多核CPU中多线程也只是分时切换而已。
+
+##### python的append和extend什么区别：
+
+extend接受一个列表参数，把这个列表的元素添加到列表的尾部，append接受对象参数，把对象添加列表尾部。
+
+### 数据结构：
+
+#### 链表：
+
+##### 找出单链表的的倒数k个元素：
+
+使用两个指针追赶的方法，一个fast一个low，fast先走k步（链表长度应该大于K），然后同时走，当fast走到尾部，slow指的就是倒数第K个。
+
+可以看一下代码（剑指offer）：
+
+```C++
+class Solution {
+public:
+    ListNode* FindKthToTail(ListNode* pListHead, unsigned int k) {
+    	if(pListHead==NULL||k==0)
+    		return NULL;
+
+    ListNode* fast=pListHead;
+    ListNode* low=pListHead;
+    for(int i=0;i<k-1;i++)
+    {
+    	if(fast->next!=NULL)
+    	fast=fast->next;
+    else
+    	return NULL;
+    }
+    while(fast->next!=NULL)
+    {
+    	fast=fast->next;
+    	low=low->next;
+    }
+    return low;
+    }
+};
+```
+
+
+
+##### 找出单链表中间元素：
+
+使用指针追赶的方法，一个fast，一个low，同时走，fast每次走两步，low每次走一步，当fast到达尾部，slow就是中间。代码参照上一道题。
+
+##### 判断单链表是否有环：
+
+使用指针追赶法，同样每次fast走两步，low走一步，如果相遇则有环，否则fast会遇到NULL退出。
+
+##### 已知单链表有环，如何知道环的长度：
+
+使用追赶法，一个fast每次走两步，一个low每次走一步，找到碰撞点，low再继续走回到原点就是环的长度。
+
+##### 如何找到环的入口结点：
+
+按照上一题的方法找到环的长度，然后从头开始遍历，同样适用追赶法，一个快k步，然后以相同的速度前进，如果遇到就是找到入口。
+
+##### 判断两个无环单链表是否相交：
+
+分别遍历到两个链表尾部，判断是否相同，因为他们如果相交，那么从相交到尾结点是一样的。
+
+##### 如何知道两个单链表是否相交（可能有环）：
+
+根据有没有环进行处理，如果没有环就按照上面的方法处理，如果一个有环一个没有，肯定不相交；如果两个都有环，在A表上进行追赶法，找到碰撞点，如果也在B上，就相交。
+
+##### 寻找两个相交链表的第一个公共节点：
+
+先砍掉长链表的头，让两个链表长度一样长，同时遍历也能找到公共节点。这样的算法时间复杂度是O（m+n），空间复杂是O（max（m，n））
+
+##### 反转链表：
+
+使用三个指针，代表前一个和当前和后一个，遍历交换：（剑指offer）
+
+```c++
+/*
+struct ListNode {
+	int val;
+	struct ListNode *next;
+	ListNode(int x) :
+			val(x), next(NULL) {
+	}
+};*/
+class Solution {
+public:
+    ListNode* ReverseList(ListNode* pHead) {
+    	if(pHead==NULL)
+    		return NULL;
+    	ListNode *preview=NULL;
+    	ListNode *now=pHead;
+    	ListNode *later=pHead->next;
+    	while(later!=NULL)
+    	{
+    		now->next=preview;
+    		preview=now;
+    		now=later;
+    		later=later->next;
+    	}
+    	now->next=preview;
+    	return now;
+    }
+};
+```
+
+#### 数组：
+
+##### 给定一个数组，给定一个目标数字，找出出现第一位置，如果不存在，返回-1：
+
+使用二分查找，稍微修改一下限定条件：
+
+```c++
+#include<iostream>
+using namespace std;
+int Binary_search(int begin ,int end ,int value,int *list)
+{
+	int end1=end;
+	while(begin<=end)
+	{
+		int mid=(begin+end)/2;
+		if(list[mid]>=value)
+			end=mid-1;
+		else
+			begin=mid+1;
+	}
+	
+	if (begin<end1)
+		return begin;
+	else
+		return -1;
+}
+int main()
+{
+	int num;
+	int ll[11]={1,2,3,4,5,6,6,6,7,8,9};
+	cin>>num;
+	cout<<Binary_search(0,10,num,ll)<<endl;
+
+
+}
+```
+
+##### 给定一个数组，里面有很多数字是乱序，找出最大4个数字：
+
+使用堆排序，维护一个存储最大4个数的最大堆，（其实也可以用快排）：
+
+```c++
+class Solution {
+public:
+    vector<int> GetLeastNumbers_Solution(vector<int> input, int k){
+    	vector<int> result;
+    	int length=input.size();
+    	if(length<=0||k<=0||k>length)
+    		return result;
+    	for(int i=0;i<length;i++)
+    	{
+    		if(result.size()<k)
+    			result.push_back(input[i]);
+    		else
+    		{
+                /*
+    			for(int j=k/2-1;j>=0;j--)
+    			{
+    				HeapAdjust(result,j,k);
+    			}
+    			for(int j=k-1;j>0;j--)
+    			{
+    				swap(result[0],result[j]);
+    				HeapAdjust(result,0,j);
+    			}*/
+                sort(result.begin(),result.end());
+    			if(result[k-1]>input[i])
+    			{
+    				result[k-1]=input[i];
+    			}
+    		}
+    	}
+    	return result;
+    }
+private:
+	void HeapAdjust(vector<int> &list,int parent,int length)
+	{
+		int temp=list[parent];
+		int child=parent*2+1;
+		while(child<length)
+		{
+			if(child+1<length&&list[child]<list[child+1])
+				child++;
+			if(temp>=list[child])
+				break;
+			list[parent]=list[child];
+			parent=child;
+			child=2*parent+1;
+		}
+		list[parent]=temp;
+	}
+
+};
+```
+
+##### 给定一个整数的数组nums，返回相加为target的两个数字的索引值，假设每次输入只有一个答案：
+
+如果是已经排好序的数组，就可以定义一个头指针和一个尾指针，如果它们的和大于结果值，就尾指针往左移，如果小于则头指针向右移。直到相等为止。
+
+如果没有排好序，则可以遍历找，也可以用哈希表进行查找，然后直接找到对应的索引：
+
+```c++
+#include<iostream>
+#include<map>
+using namespace std;
+int main()
+{
+	int arr[]={2,5,4,6,7,9,10,20,46};
+	int target=30;
+	map<int,int> test;
+	map<int,int>::iterator iter;
+	for(int i=0;i<9;i++)
+	{
+		iter=test.find(arr[i]);
+		if(iter!=test.end())
+		{
+			cout<<test[arr[i]]<<" "<<i<<endl;
+			break;
+		}
+		else
+		{
+			test[target-arr[i]]=i;
+		}
+
+	}
+}
+
+```
+
