@@ -241,3 +241,62 @@ int main()
 
 ```
 
+##### 给定一个字符串，找到最长无重复子字符串（例如给定“abcabcbb”，答案是：“abc”）：
+
+定义两个变量，一个存储最长子字节串的长度，另外一个存储无重复子串左边的起始位置，然后创建一个哈希表，遍历字符串，如果没有出现在哈希表，说明没有遇到这个字符，此时计算最长无重复字串，当哈希表值小于left，说明位置更新了，需要重新计算最长无重复子串，每次在哈希表中对应赋值加一。
+
+```c++
+#include<iostream>
+#include<map>
+using namespace std;
+int main()
+{
+	string ss="pwwkew";
+	map<char,int> test;
+	map<char,int>::iterator iter;
+	int longest=0;
+	int left=0;
+	for(int i=0;i<ss.size();i++)
+	{
+		iter=test.find(ss[i]);
+		if(iter==test.end()||test[ss[i]]<left)
+		{
+			longest=max(longest,i-left+1);
+			test[ss[i]]=left;
+		}
+		else
+		{
+			left=i;
+			test[ss[i]]=i;
+		}
+	}
+	cout<<longest<<endl;
+}
+```
+
+#### 其他：
+
+##### 不适用现成的开根号函数，如何实现开平方根操作：
+
+```python
+def sqrt_binary(target):
+	left=0;
+	right=target;
+	mid=(right+left)/2
+	while abs(mid*mid-target)>0.000001:
+		if mid*mid==target:
+			return mid
+		elif mid*mid>target:
+			right=mid
+		else:
+			left=mid
+		mid=(left+right)/2
+	return mid
+
+def sqrt_newton(target):
+	k=target
+	while abs(k*k-target) > 0.000001:
+		k=0.5*(k+target/k)
+	return k
+```
+
