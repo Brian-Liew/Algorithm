@@ -332,4 +332,59 @@ def sqrt_newton(target):
 
 可以用堆排序，创建1000个数据的小根堆，先将前1000个数据放到堆里面，然后对于插入的新的数据，如果与小根堆的最下值进行比较，如果比这个值小，那么不插入，如果比这个值大，就插入重新调整遍历，知道终止，输出小根堆的值就是第1000大的数据。
 
-常见的
+#### C++：
+
+##### 继承、多态、封装：
+
+继承是为了使整个程序更加符合逻辑，比如设计一堆苹果、橘子、梨等的水果类，我们首先设计出一个抽象的水果的基类，这个基类具有各种水果的共性，我们根据这个类派生出各种具体地水果类，这样的分类思想使得我们的设计更加层次分明，但是有一个缺点就是你定义一个基类让它等于一个子类，调用的函数是基类的，如果要调用子类，可以定义个枚举类型，每次调用那个函数时检查是那个类型然后进行操作：
+
+```c++
+#include <iostream>
+using namespace std;
+
+class Employee 
+{
+   // ...
+	                
+public:
+	enum Empl_type { M, E };
+	Empl_type type;
+	Employee( ) : type(E) { }                                                                        
+};
+
+class Manager : public Employee 
+{
+   // ...
+public:
+	Manager( ) { type = M; }
+};
+
+void print_Employee( Employee* e)
+{
+	switch(e->type)
+	{
+		case Employee::E:
+			cout<<"Employee print()\n";
+			// ...
+			break;
+		case Employee::M:
+			cout<<"Manager print()\n";
+			// ...
+			break;
+     }
+}
+
+int main()
+{
+	Employee *e=new Manager;
+	//Manager *m = new Manager;
+	// ...
+	//e = m; //every manager is an employee
+	print_Employee(e); //trouble, call employee::print()
+	return 0;
+}
+```
+
+封装则是将数据以及操作数据的方法放在一个类里面，然后给予相应的权限。模块化的设计师封装的本质原因。
+
+多态则是一个函数多种实现，一个接口，多种方法，表现在运行程序时，根据传入对象调用不同的函数。这里用到了虚函数来作为基类的定义。其实这里的本质就是函数地址是早绑定还是晚绑定，如果函数的调用时，编译器编译期间就可以确定函数的调用地址并生产代码，属于静态的，就不是多态，而如果函数调用在编译期间不能确定的话，就是晚绑定。
