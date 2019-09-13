@@ -41,11 +41,27 @@ int main()
             path[i][j] = direction;
         }
     }//for
-    for(int i=0;i<row;i++)
+    int lujing[100];
+    int len=0;
+    int index1=row-1;
+    int index2=col-1;
+
+    for(int i=1;i<=row+col-2;i++)
     {
-        for(int j=0;j<col;j++)
+        if(path[index1][index2]==0)
         {
-            cout<<path[i][j]<<endl;
+            lujing[len++]=matrix[index1][index2];
+            index1=index1-1;
+            
+        }
+        else
+        {
+            lujing[len++]=matrix[index1][index2];
+            index2=index2-1;
         }
     }
+    cout<<matrix[0][0]<<endl;
+    for(int i=len-1;i>=0;i--)
+        cout<<lujing[i]<<endl;
+    cout<<dp[row-1][col-1]<<endl; 
 }
