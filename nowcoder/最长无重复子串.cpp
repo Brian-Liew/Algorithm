@@ -14,13 +14,14 @@ int main()
 		if(iter==test.end()||test[ss[i]]<left)
 		{
 			longest=max(longest,i-left+1);
-			test[ss[i]]=left;
+			//test[ss[i]]=left;
 		}
 		else
 		{
-			left=i;
-			test[ss[i]]=i;
+			left=test[ss[i]];
+			//test[ss[i]]=i;
 		}
+		test[ss[i]]=i+1;
 	}
 	cout<<longest<<endl;
 }
